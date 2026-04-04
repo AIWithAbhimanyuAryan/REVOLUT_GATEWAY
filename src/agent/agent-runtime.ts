@@ -1,0 +1,116 @@
+import { CopilotClient, approveAll } from "@github/copilot-sdk";
+import type { SessionManager, TranscriptMessage } from "../sessions/session-manager.js";
+import { enqueueInLane } from "../queue/command-queue.js";
+
+export interface AgentTurnEvent {
+  type: "delta" | "message" | "tool_start" | "tool_complete" | "idle" | "error";
+  content?: string;
+  toolName?: string;
+  error?: string;
+}
+
+export type AgentTurnCallback = (event: AgentTurnEvent) => void;
+
+export class AgentRuntime {
+  private client: CopilotClient | null = null;
+  private sessions = new Map<string, import("@github/copilot-sdk").CopilotSession>();
+
+  constructor(private sessionManager: SessionManager) {}
+
+  async start(): Promise<void> {
+    this.client = new CopilotClient({ autoStart: true });
+    await this.client.start();
+    console.log("[agent] Copilot client started");
+  }
+
+  async stop(): Promise<void> {
+    for (const [key, session] of this.sessions) {
+      try {
+        await session.disconnect();
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+    this.sessions.clear();
+    if (this.client) {
+      await this.client.stop();
+      this.client = null;
+    }
+    console.log("[agent] Copilot client stopped");
+  }
+
+  async runTurn(
+    sessionKey: string,
+    userMessage: string,
+    onEvent: AgentTurnCallback,
+  ): Promise<string> {
+    const lane = `session:${sessionKey}`;
+
+    return enqueueInLane(lane, async () => {
+      if (!this.client) throw new Error("Agent runtime not started");
+
+      await this.sessionManager.appendMessage(sessionKey, {
+        role: "user",
+        content: userMessage,
+      });
+
+      let copilotSession = this.sessions.get(sessionKey);
+      if (!copilotSession) {
+        copilotSession = await this.client.createSession({
+          model: "gpt-4o",
+          onPermissionRequest: approveAll,
+        });
+        this.sessions.set(sessionKey, copilotSession);
+      }
+
+      let fullResponse = "";
+
+      const done = new Promise<void>((resolve, reject) => {
+        copilotSession!.on("assistant.message_delta", (event) => {
+          const delta = (event as any).data?.deltaContent ?? "";
+          if (delta) {
+            fullResponse += delta;
+            onEvent({ type: "delta", content: delta });
+          }
+        });
+
+        copilotSession!.on("assistant.message", (event) => {
+          const content = (event as any).data?.content ?? "";
+          if (content && !fullResponse) {
+            fullResponse = content;
+          }
+          onEvent({ type: "message", content: fullResponse });
+        });
+
+        copilotSession!.on("tool.execution_start", (event) => {
+          const toolName = (event as any).data?.name ?? "unknown";
+          onEvent({ type: "tool_start", toolName });
+        });
+
+        copilotSession!.on("tool.execution_complete", (event) => {
+          const toolName = (event as any).data?.name ?? "unknown";
+          onEvent({ type: "tool_complete", toolName });
+        });
+
+        copilotSession!.on("session.idle", () => {
+          onEvent({ type: "idle" });
+          resolve();
+        });
+
+        setTimeout(() => reject(new Error("Agent turn timed out")), 120_000);
+      });
+
+      await copilotSession.send({ prompt: userMessage });
+      await done;
+
+      if (fullResponse) {
+        await this.sessionManager.appendMessage(sessionKey, {
+          role: "assistant",
+          content: fullResponse,
+        });
+      }
+
+      return fullResponse;
+    });
+  }
+}
