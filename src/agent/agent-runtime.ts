@@ -59,7 +59,7 @@ export class AgentRuntime {
       let copilotSession = this.sessions.get(sessionKey);
       if (!copilotSession) {
         copilotSession = await this.client.createSession({
-          model: "gpt-4",
+          model: "gpt-5-mini",
           onPermissionRequest: approveAll,
         });
         this.sessions.set(sessionKey, copilotSession);

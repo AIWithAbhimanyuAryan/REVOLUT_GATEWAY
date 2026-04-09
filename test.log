@@ -204,3 +204,21 @@ Restarting 'src/index.ts'
 [gateway] Listening on port 18800
 [revolut] Revolut Gateway running on ws://localhost:18800
 Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:871) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:925) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
