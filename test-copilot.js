@@ -6,13 +6,13 @@ async function run() {
   console.log("Client started");
   
   const session = await client.createSession({
-    model: "gpt-4o",
+    model: "gpt-4",
     onPermissionRequest: approveAll
   });
   console.log("Session created");
   
   session.on((event) => {
-    console.log("Event:", event.type, event.data?.content || event.data?.name || "");
+    console.log("Event:", event.type, event.data);
   });
 
   console.log("Sending prompt");

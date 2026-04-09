@@ -18,18 +18,13 @@ Error: listen EADDRINUSE[gateway] Client connected: 75b86f9c-89d (test)
 [agent] Sending prompt to copilotSession...
 [agent] Prompt sent, waiting for done promise...
 [gateway] Client disconnected: 75b86f9c-89d
-TRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/server/gateway-server.ts:78:12)
-    at main (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/index.ts:29:17)
-Emitted 'error' event on WebSocketServer instance at:
-    at Server.emit (node:events:519:28)
-    at emitErrorNT (node:net:1976:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
-  code: 'EADDRINUSE',
-  errno: -48,
-  syscall: 'listen',
-  address: '::',
-  port: 18800
-}
-
-Node.js v22.22.1
 Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:90108) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+ 'src/index.ts'. Waiting for file changes before restarting...
