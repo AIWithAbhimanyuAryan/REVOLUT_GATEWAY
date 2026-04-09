@@ -4,3 +4,9 @@ dist/
 .env
 ui/node_modules/
 ui/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
