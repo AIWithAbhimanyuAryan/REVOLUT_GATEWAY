@@ -1,6 +1,6 @@
 node_modules/
 dist/
-.billy-data/
+.revolut-data/
 .env
 ui/node_modules/
 ui/dist/

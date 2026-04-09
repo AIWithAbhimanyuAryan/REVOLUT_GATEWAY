@@ -63,7 +63,7 @@ export class GatewayServer {
       // Serve a simple redirect to the UI for the root path
       if (req.url === "/" || req.url === "") {
         res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(`<html><body><h1>Billy Gateway</h1><p>WebSocket endpoint: ws://localhost:${opts.port}</p></body></html>`);
+        res.end(`<html><body><h1>Revolut Gateway</h1><p>WebSocket endpoint: ws://localhost:${opts.port}</p></body></html>`);
         return;
       }
       res.writeHead(404);
@@ -257,6 +257,7 @@ export class GatewayServer {
     };
 
     // Fire and forget — the response events stream back via WS events
+    console.log("[gateway] Handing off chat to agentRuntime:", { sessionKey, message });
     void this.opts.agentRuntime.runTurn(sessionKey, message, onEvent).catch((err) => {
       onEvent({ type: "error", error: err instanceof Error ? err.message : String(err) });
     });

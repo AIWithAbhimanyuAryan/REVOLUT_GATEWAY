@@ -46,7 +46,9 @@ export class AgentRuntime {
   ): Promise<string> {
     const lane = `session:${sessionKey}`;
 
+    console.log(`[agent] Queueing runTurn for lane ${lane}`);
     return enqueueInLane(lane, async () => {
+      console.log(`[agent] Starting runTurn for lane ${lane}`);
       if (!this.client) throw new Error("Agent runtime not started");
 
       await this.sessionManager.appendMessage(sessionKey, {
@@ -100,7 +102,9 @@ export class AgentRuntime {
         setTimeout(() => reject(new Error("Agent turn timed out")), 120_000);
       });
 
+      console.log("[agent] Sending prompt to copilotSession...");
       await copilotSession.send({ prompt: userMessage });
+      console.log("[agent] Prompt sent, waiting for done promise...");
       await done;
 
       if (fullResponse) {

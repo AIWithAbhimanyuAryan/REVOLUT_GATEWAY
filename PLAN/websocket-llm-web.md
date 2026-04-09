@@ -1,6 +1,6 @@
-# Billy Gateway — Simplified OpenClaw Gateway in TypeScript
+# Revolut Gateway — Simplified OpenClaw Gateway in TypeScript
 
-Build a simplified version of the OpenClaw gateway control plane in `BILLY_GATEWAY/`, using `@github/copilot-sdk` as the agent runtime and a web chat UI for interaction.
+Build a simplified version of the OpenClaw gateway control plane in `REVOLUT_GATEWAY/`, using `@github/copilot-sdk` as the agent runtime and a web chat UI for interaction.
 
 ## Architecture (mirrors the blog post)
 
@@ -72,7 +72,7 @@ Web UI (browser) ←→ WebSocket ←→ Gateway Server ←→ Copilot SDK (agen
 
 ## Key Simplifications vs. Real OpenClaw
 
-| OpenClaw | Billy Gateway |
+| OpenClaw | Revolut Gateway |
 |---|---|
 | 200+ gateway files | ~15-20 files |
 | TypeBox + full codegen | TypeBox for schemas, no codegen |

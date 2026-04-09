@@ -1,5 +1,5 @@
 {
-  "name": "billy-gateway",
+  "name": "revolut-gateway",
   "version": "0.1.0",
   "type": "module",
   "description": "Simplified OpenClaw-style gateway control plane in TypeScript",

@@ -1,4 +1,4 @@
-# Billy Gateway
+# Revolut Gateway
 
 A simplified version of the [OpenClaw](https://github.com/openclaw/openclaw) gateway control plane, built in TypeScript.
 
@@ -52,7 +52,7 @@ The gateway runs on `ws://localhost:18800` by default. The web UI runs on `http:
 | `GATEWAY_PORT` | `18800` | WebSocket server port |
 | `GATEWAY_TOKEN` | _(empty)_ | Optional bearer token for auth |
 | `HEARTBEAT_INTERVAL_MS` | `30000` | Heartbeat tick interval |
-| `DATA_DIR` | `.billy-data` | Directory for session store + transcripts |
+| `DATA_DIR` | `.revolut-data` | Directory for session store + transcripts |
 
 ## WebSocket Protocol
 
