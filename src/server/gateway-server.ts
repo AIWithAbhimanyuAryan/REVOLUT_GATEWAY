@@ -113,6 +113,7 @@ export class GatewayServer {
 
     // First message must be a connect handshake
     ws.once("message", (data) => {
+      console.log(`[gateway] Raw Handshake from ${connId}:`, data.toString());
       try {
         const raw = JSON.parse(data.toString());
         if (!raw || raw.type !== "req" || raw.method !== "connect") {
@@ -155,11 +156,16 @@ export class GatewayServer {
           ok: true,
           payload: hello,
         };
-        ws.send(JSON.stringify(res));
+        const resStr = JSON.stringify(res);
+        console.log(`[gateway] -> Sending to ${connId}:`, resStr);
+        ws.send(resStr);
         console.log(`[gateway] Client connected: ${connId} (${params.client.id})`);
 
         // Now listen for further messages
-        ws.on("message", (msg) => this.handleMessage(client, msg.toString()));
+        ws.on("message", (msg) => {
+          console.log(`[gateway] <- Received from ${connId}:`, msg.toString());
+          this.handleMessage(client, msg.toString());
+        });
       } catch (err) {
         this.sendError(ws, "0", "PARSE_ERROR", "Invalid JSON");
         ws.close(4000, "Parse error");
@@ -199,7 +205,9 @@ export class GatewayServer {
         ok: true,
         payload: result,
       };
-      client.ws.send(JSON.stringify(res));
+      const resStr = JSON.stringify(res);
+      console.log(`[gateway] -> Sending to ${client.connId}:`, resStr);
+      client.ws.send(resStr);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.sendError(client.ws, frame.id, "METHOD_ERROR", message);
@@ -248,6 +256,7 @@ export class GatewayServer {
         seq: this.eventSeq++,
       };
       const json = JSON.stringify(eventFrame);
+      console.log(`[gateway] -> Broadcasting event:`, json);
       // Broadcast to all clients subscribed to this session
       for (const c of this.clients.values()) {
         if (c.subscribedSession === sessionKey && c.ws.readyState === WebSocket.OPEN) {

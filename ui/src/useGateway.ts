@@ -54,7 +54,9 @@ export function useGateway(): GatewayHook {
         }
         const id = nextId();
         pendingCallbacks.current.set(id, resolve);
-        ws.send(JSON.stringify({ type: "req", id, method, params }));
+        const payloadStr = JSON.stringify({ type: "req", id, method, params });
+        console.log(`[UI -> WS] Sending:`, payloadStr);
+        ws.send(payloadStr);
         setTimeout(() => {
           if (pendingCallbacks.current.has(id)) {
             pendingCallbacks.current.delete(id);
@@ -129,6 +131,7 @@ export function useGateway(): GatewayHook {
       };
 
       ws.onmessage = (ev) => {
+        console.log(`[WS -> UI] Received raw:`, ev.data);
         try {
           const frame = JSON.parse(ev.data);
 
@@ -150,12 +153,16 @@ export function useGateway(): GatewayHook {
       };
 
       ws.onclose = () => {
-        setState("disconnected");
-        wsRef.current = null;
+        if (wsRef.current === ws) {
+          setState("disconnected");
+          wsRef.current = null;
+        }
       };
 
       ws.onerror = () => {
-        setState("disconnected");
+        if (wsRef.current === ws) {
+          setState("disconnected");
+        }
       };
     },
     [activeSession, loadHistory, loadSessions],
@@ -214,6 +221,18 @@ export function useGateway(): GatewayHook {
         case "chat.tool_complete":
           // Could show tool indicators — skip for simplicity
           break;
+        case "chat.error": {
+          const errMsg = payload?.error || "Unknown error";
+          streamingRef.current = "";
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            const newMsg = { role: "assistant" as const, content: `⚠️ Error: ${errMsg}`, ts: new Date().toISOString() };
+            if (last?.streaming) return [...prev.slice(0, -1), newMsg];
+            return [...prev, newMsg];
+          });
+          void loadSessions();
+          break;
+        }
         default:
           break;
       }

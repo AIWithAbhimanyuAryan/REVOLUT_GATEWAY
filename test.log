@@ -27,4 +27,180 @@ Restarting 'src/index.ts'
 [agent] Copilot client started
 [gateway] Listening on port 18800
 [revolut] Revolut Gateway running on ws://localhost:18800
- 'src/index.ts'. Waiting for file changes before restarting...
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:92378) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:92703) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:93087) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:93916) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:94442) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:95432) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:95878) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::18800
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at <anonymous> (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/server/gateway-server.ts:79:23)
+    at new Promise (<anonymous>)
+    at GatewayServer.start (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/server/gateway-server.ts:78:12)
+    at main (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/index.ts:29:17)
+Emitted 'error' event on WebSocketServer instance at:
+    at Server.emit (node:events:519:28)
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 18800
+}
+
+Node.js v22.22.1
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+Error [TransformError]: Transform failed with 1 error:
+/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/src/server/gateway-server.ts:207:12: ERROR: Expected ":" but found "resStr"
+    at failureErrorWithLog (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/esbuild/lib/main.js:1748:15)
+    at /Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/esbuild/lib/main.js:1017:50
+    at responseCallbacks.<computed> (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/esbuild/lib/main.js:884:9)
+    at handleIncomingPacket (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/esbuild/lib/main.js:939:12)
+    at Socket.readFromStdout (/Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/esbuild/lib/main.js:862:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+
+Node.js v22.22.1
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:96435) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:96781) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:97195) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+[gateway] Raw Handshake from 38552165-458: {"type":"req","id":"1","method":"connect","params":{"client":{"id":"test","version":"1","platform":"node"}}}
+[gateway] -> Sending to 38552165-458: {"type":"res","id":"1","ok":true,"payload":{"type":"hello-ok","protocol":1,"server":{"version":"0.1.0","connId":"38552165-458"},"features":{"methods":["chat.send","sessions.list","sessions.create","sessions.delete","sessions.resolve","sessions.history"],"events":["chat.delta","chat.message","chat.idle","chat.tool","tick"]}}}
+[gateway] Client connected: 38552165-458 (test)
+[gateway] <- Received from 38552165-458: {"type":"req","id":"2","method":"chat.send","params":{"sessionKey":"test-sess","message":"Hello"}}
+[gateway] Handing off chat to agentRuntime: { sessionKey: 'test-sess', message: 'Hello' }
+[agent] Queueing runTurn for lane session:test-sess
+[agent] Starting runTurn for lane session:test-sess
+[gateway] -> Sending to 38552165-458: {"type":"res","id":"2","ok":true,"payload":{"status":"queued"}}
+[agent] Sending prompt to copilotSession...
+[agent] Prompt sent, waiting for done promise...
+[gateway] Client disconnected: 38552165-458
+[agent] Copilot session error:  {
+  type: 'session.error',
+  data: {
+    errorType: 'query',
+    message: 'Execution failed: CAPIError: 400 The requested model is not supported. (Request ID: F4B7:2ABD72:11EE0E6:13FEC74:69D81E27)',
+    stack: 'CAPIError: 400 The requested model is not supported.\n' +
+      '    at t.fromAPIError (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2086:992)\n' +
+      '    at uct.getCompletionWithTools (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2086:11451)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+      '    at async B5e.getCompletionWithTools (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2098:2922)\n' +
+      '    at async t.runAgenticLoop (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2482:43194)\n' +
+      '    at async t.processQueuedItems (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2482:7851)\n' +
+      '    at async t.processQueue (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2482:2932)\n' +
+      '    at async t.send (file:///Users/abhi/Agent-2026/STRATEGY_OPEN_CLAW/REVOLUT_GATEWAY/node_modules/@github/copilot/app.js:2480:4033)',
+    statusCode: 400,
+    providerCallId: 'F4B7:2ABD72:11EE0E6:13FEC74:69D81E27'
+  },
+  id: 'a1d28a0c-e6dd-4757-8867-0fb9177eca51',
+  timestamp: '2026-04-09T21:46:16.933Z',
+  parentId: '5c7085a0-47ed-42f6-8c95-7f47c915cac3'
+}
+[gateway] -> Broadcasting event: {"type":"event","event":"chat.message","payload":{"sessionKey":"test-sess","type":"message","content":"**Backend Error**\\n\\nThe GitHub Copilot API returned an error: `400`. \\n\\n*This is a mocked response generated by the gateway so you can continue testing the WebSocket pipeline without API access!*"},"seq":0}
+[gateway] -> Broadcasting event: {"type":"event","event":"chat.idle","payload":{"sessionKey":"test-sess","type":"idle"},"seq":1}
+[gateway] -> Broadcasting event: {"type":"event","event":"chat.idle","payload":{"sessionKey":"test-sess","type":"idle"},"seq":2}
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
+Restarting 'src/index.ts'
+[revolut] Starting Revolut Gateway...
+[revolut] Session manager ready
+[CLI subprocess] (node:99352) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[CLI subprocess] (Use `node --trace-warnings ...` to show where the warning was created)
+[agent] Copilot client started
+[gateway] Listening on port 18800
+[revolut] Revolut Gateway running on ws://localhost:18800
+Failed running 'src/index.ts'. Waiting for file changes before restarting...
