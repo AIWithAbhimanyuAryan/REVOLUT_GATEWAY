@@ -17,7 +17,7 @@ async def _main() -> None:
     token = os.getenv("GATEWAY_TOKEN", "") or None
     heartbeat_interval_ms = int(os.getenv("HEARTBEAT_INTERVAL_MS", "30000"))
     data_dir = os.getenv("DATA_DIR", ".revolut-data")
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    model = os.getenv("COPILOT_MODEL", "gpt-4o-mini")
 
     session_manager = SessionManager(data_dir)
     await session_manager.init()

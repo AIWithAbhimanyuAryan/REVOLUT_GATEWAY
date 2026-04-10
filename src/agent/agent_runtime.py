@@ -1,5 +1,6 @@
 from __future__ import annotations
 import asyncio
+import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -11,6 +12,13 @@ from ..sessions.session_manager import SessionManager, TranscriptMessage
 from ..queue.command_queue import enqueue_in_lane
 
 TURN_TIMEOUT = 120  # seconds
+
+_COPILOT_BASE_URL = "https://api.githubcopilot.com"
+_COPILOT_HEADERS = {
+    "editor-version": "vscode/1.95.0",
+    "editor-plugin-version": "copilot-chat/0.22.0",
+    "Copilot-Integration-Id": "vscode-chat",
+}
 
 
 @dataclass
@@ -31,7 +39,15 @@ class AgentRuntime:
         self._client: Optional[AsyncOpenAI] = None
 
     async def start(self) -> None:
-        self._client = AsyncOpenAI()
+        github_token = os.getenv("GITHUB_TOKEN")
+        if not github_token:
+            raise RuntimeError("GITHUB_TOKEN env var is required for GitHub Copilot")
+        self._client = AsyncOpenAI(
+            api_key=github_token,
+            base_url=_COPILOT_BASE_URL,
+            default_headers=_COPILOT_HEADERS,
+        )
+        print(f"[agent] GitHub Copilot client ready — model: {self._model}")
 
     async def stop(self) -> None:
         self._client = None
