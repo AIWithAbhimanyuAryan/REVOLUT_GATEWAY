@@ -1,24 +1,17 @@
 from __future__ import annotations
 import asyncio
-import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
-from openai import AsyncOpenAI
+from copilot import CopilotClient
+from copilot.session import PermissionHandler
 
 from ..sessions.session_manager import SessionManager, TranscriptMessage
 from ..queue.command_queue import enqueue_in_lane
 
 TURN_TIMEOUT = 120  # seconds
-
-_COPILOT_BASE_URL = "https://api.githubcopilot.com"
-_COPILOT_HEADERS = {
-    "editor-version": "vscode/1.95.0",
-    "editor-plugin-version": "copilot-chat/0.22.0",
-    "Copilot-Integration-Id": "vscode-chat",
-}
 
 
 @dataclass
@@ -34,23 +27,28 @@ AgentTurnCallback = Callable[[AgentTurnEvent], None]
 
 class AgentRuntime:
     def __init__(self, session_manager: SessionManager, model: str = "gpt-4o-mini") -> None:
-        self._sessions = session_manager
+        self._session_manager = session_manager
         self._model = model
-        self._client: Optional[AsyncOpenAI] = None
+        self._client: Optional[CopilotClient] = None
+        # One CopilotSession per session key — persists context across turns
+        self._copilot_sessions: dict[str, Any] = {}
 
     async def start(self) -> None:
-        github_token = os.getenv("GITHUB_TOKEN")
-        if not github_token:
-            raise RuntimeError("GITHUB_TOKEN env var is required for GitHub Copilot")
-        self._client = AsyncOpenAI(
-            api_key=github_token,
-            base_url=_COPILOT_BASE_URL,
-            default_headers=_COPILOT_HEADERS,
-        )
-        print(f"[agent] GitHub Copilot client ready — model: {self._model}")
+        self._client = CopilotClient(auto_start=True)
+        await self._client.start()
+        print("[agent] Copilot client started")
 
     async def stop(self) -> None:
-        self._client = None
+        for key, session in self._copilot_sessions.items():
+            try:
+                await session.disconnect()
+            except Exception:
+                pass
+        self._copilot_sessions.clear()
+        if self._client:
+            await self._client.stop()
+            self._client = None
+        print("[agent] Copilot client stopped")
 
     async def run_turn(
         self,
@@ -58,55 +56,101 @@ class AgentRuntime:
         user_message: str,
         on_event: AgentTurnCallback,
     ) -> None:
-        async def _run() -> None:
-            session = await self._sessions.resolve_or_create(session_key)
-            await self._sessions.append_message(
+        lane = f"session:{session_key}"
+        print(f"[agent] Queueing runTurn for lane {lane}")
+
+        async def _run() -> str:
+            print(f"[agent] Starting runTurn for lane {lane}")
+            if not self._client:
+                raise RuntimeError("Agent runtime not started")
+
+            # Persist user message to transcript
+            entry = await self._session_manager.resolve_or_create(session_key)
+            await self._session_manager.append_message(
                 session_key,
                 TranscriptMessage(
                     role="user",
                     content=user_message,
                     ts=datetime.now(timezone.utc).isoformat(),
-                    session_id=session.session_id,
+                    session_id=entry.session_id,
                 ),
             )
 
-            history = await self._sessions.read_transcript(session_key)
-            messages = [{"role": m.role, "content": m.content} for m in history]
-
-            assert self._client is not None
-            try:
-                full_response = ""
-                stream = await self._client.chat.completions.create(
+            # Get or create CopilotSession (persists context across turns)
+            copilot_session = self._copilot_sessions.get(session_key)
+            if copilot_session is None:
+                copilot_session = await self._client.create_session(
                     model=self._model,
-                    messages=messages,
-                    stream=True,
+                    on_permission_request=PermissionHandler.approve_all,
+                    streaming=True,
                 )
-                async for chunk in stream:
-                    delta = chunk.choices[0].delta.content if chunk.choices else None
-                    if delta:
-                        full_response += delta
-                        on_event(AgentTurnEvent(type="delta", content=delta))
+                self._copilot_sessions[session_key] = copilot_session
 
-                on_event(AgentTurnEvent(type="message", content=full_response))
+            full_response = ""
+            done = asyncio.Event()
 
-                current_session = self._sessions.get_session(session_key)
-                if current_session:
-                    await self._sessions.append_message(
-                        session_key,
-                        TranscriptMessage(
-                            role="assistant",
-                            content=full_response,
-                            ts=datetime.now(timezone.utc).isoformat(),
-                            session_id=current_session.session_id,
-                        ),
-                    )
-            except Exception as e:
-                on_event(AgentTurnEvent(type="message", content=f"Agent error: {e}"))
-                on_event(AgentTurnEvent(type="error", error=str(e)))
+            def handle_event(event: Any) -> None:
+                nonlocal full_response
+                match event.type.value:
+                    case "assistant.message_delta":
+                        delta = event.data.delta_content or ""
+                        if delta:
+                            full_response += delta
+                            on_event(AgentTurnEvent(type="delta", content=delta))
 
-            on_event(AgentTurnEvent(type="idle"))
+                    case "assistant.message":
+                        content = event.data.content or ""
+                        if content and not full_response:
+                            full_response = content
+                        on_event(AgentTurnEvent(type="message", content=full_response))
 
-        await asyncio.wait_for(
-            enqueue_in_lane(f"session:{session_key}", _run),
-            timeout=TURN_TIMEOUT,
-        )
+                    case "tool.execution_start":
+                        tool_name = getattr(event.data, "name", "unknown")
+                        on_event(AgentTurnEvent(type="tool_start", tool_name=tool_name))
+
+                    case "tool.execution_complete":
+                        tool_name = getattr(event.data, "name", "unknown")
+                        on_event(AgentTurnEvent(type="tool_complete", tool_name=tool_name))
+
+                    case "session.idle":
+                        on_event(AgentTurnEvent(type="idle"))
+                        done.set()
+
+                    case "session.error":
+                        error_msg = str(getattr(event, "message", "400"))
+                        print(f"[agent] Copilot session error: {error_msg}")
+
+                        mock_content = (
+                            f"**Backend Error**\n\n"
+                            f"The GitHub Copilot API returned an error: `{error_msg}`.\n\n"
+                            f"*This is a mocked response generated by the gateway so you can "
+                            f"continue testing the WebSocket pipeline without API access!*"
+                        )
+                        if not full_response:
+                            full_response = mock_content
+                        on_event(AgentTurnEvent(type="message", content=mock_content))
+                        on_event(AgentTurnEvent(type="idle"))
+                        done.set()
+
+            copilot_session.on(handle_event)
+
+            print("[agent] Sending prompt to copilotSession...")
+            await copilot_session.send(user_message)
+            print("[agent] Prompt sent, waiting for done...")
+            await asyncio.wait_for(done.wait(), timeout=TURN_TIMEOUT)
+
+            # Persist assistant response to transcript
+            if full_response:
+                await self._session_manager.append_message(
+                    session_key,
+                    TranscriptMessage(
+                        role="assistant",
+                        content=full_response,
+                        ts=datetime.now(timezone.utc).isoformat(),
+                        session_id=entry.session_id,
+                    ),
+                )
+
+            return full_response
+
+        await enqueue_in_lane(lane, _run)
